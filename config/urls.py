@@ -23,7 +23,7 @@ from rest_framework.permissions import AllowAny
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="UzMovie",
+        title="Admin Service",
 
         default_version='v1', ),
     public=True,
