@@ -24,10 +24,7 @@ class UsersViewSet(ViewSet):
     )
     def get_all(self, request, *args, **kwargs):
         response = requests.get(f"{settings.USER_MANAGEMENT_SERVICE_URL}/getinfo/")
-        if response.status_code == 200:
-            return Response(response.json(), status=response.status_code)
-        else:
-            return Response({'message': 'False'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(response.json())
 
     @swagger_auto_schema(
         operation_description="Delete user",
@@ -55,10 +52,7 @@ class UsersViewSet(ViewSet):
             return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
 
         response = requests.post(f"{settings.USER_MANAGEMENT_SERVICE_URL}/delete_user/{id}/")
-        if response.status_code == 200:
-            return Response({'status': 'success'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'Failed to delete user'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(response.json())
 
     @swagger_auto_schema(
         operation_description="Get by  user id",
@@ -79,10 +73,7 @@ class UsersViewSet(ViewSet):
             return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
 
         response = requests.get(f"{settings.USER_MANAGEMENT_SERVICE_URL}/user/{id}/", )
-        if response.status_code == 200:
-            return Response(response.json(), status=response.status_code)
-        else:
-            return Response({'error': 'Failed to get user details'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(response.json())
 
 
 class UserAnalyticsViewSet(ViewSet):
@@ -94,10 +85,7 @@ class UserAnalyticsViewSet(ViewSet):
     )
     def get(self, request, *args, **kwargs):
         response = requests.get(f"{settings.ANALYTICS_SERVICE_URL}/user_analytics/", )
-        if response.status_code == 200:
-            return Response(response.json(), status=response.status_code)
-        else:
-            return Response({'error': 'Failed to retrieve analytics data'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(response.json())
 
 
 class PostsViewSet(ViewSet):
@@ -112,10 +100,7 @@ class PostsViewSet(ViewSet):
     )
     def get(self, request, *args, **kwargs):
         response = requests.get(f"{settings.POSTS_SERVICE_URL}/posts/")
-        if response.status_code == 200:
-            return Response(response.json(), status=response.status_code)
-        else:
-            return Response({'error': 'Failed to retrieve posts data'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(response.json())
 
     @swagger_auto_schema(
         operation_description="Get by  post id",
@@ -135,8 +120,6 @@ class PostsViewSet(ViewSet):
         if not id:
             return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        response = requests.get(f"{settings.POSTS_SERVICE_URL}/posts/{id}/", )
-        if response.status_code == 200:
-            return Response(response.json(), status=response.status_code)
-        else:
-            return Response({'error': 'Failed to get post details'}, status=status.HTTP_404_NOT_FOUND)
+        url = f"{settings.POSTS_SERVICE_URL}/post/{id}/"
+        response = requests.get(url).json()
+        return Response(response)
