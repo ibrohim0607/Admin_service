@@ -20,7 +20,7 @@ class UsersViewSet(ViewSet):
         operation_description="Get all user",
         operation_summary="Get all user",
         responses={200: UserSerializer(many=True)},
-        tags=['Admin']
+        tags=['User']
     )
     def get_all(self, request, *args, **kwargs):
         response = requests.get(f"{settings.USER_MANAGEMENT_SERVICE_URL}/getinfo/")
@@ -38,7 +38,7 @@ class UsersViewSet(ViewSet):
             requiered=["token", "user_id"]
         ),
         responses={200: UserSerializer()},
-        tags=['Admin']
+        tags=['User']
     )
     def delete(self, request, id, *args, **kwargs):
         self.check_token(request.data.get('token'))
@@ -66,7 +66,7 @@ class UsersViewSet(ViewSet):
             200: UserSerializer(),
             404: "Not found"
         },
-        tags=['Admin']
+        tags=['User']
     )
     def get_by_id(self, request, id, *args, **kwargs):
         if not id:
@@ -81,7 +81,7 @@ class UserAnalyticsViewSet(ViewSet):
         operation_description="Get Analytic",
         operation_summary="Get Analytic",
         # responses={200: UserSerializer(many=True)},
-        tags=['Admin']
+        tags=['Analytic']
     )
     def get(self, request, *args, **kwargs):
         response = requests.get(f"{settings.ANALYTICS_SERVICE_URL}/user_analytics/", )
@@ -96,7 +96,7 @@ class PostsViewSet(ViewSet):
             200: PostSerializer(),
             404: "Not found"
         },
-        tags=['Admin']
+        tags=['Post']
     )
     def get(self, request, *args, **kwargs):
         response = requests.get(f"{settings.POSTS_SERVICE_URL}/posts/")
@@ -114,7 +114,7 @@ class PostsViewSet(ViewSet):
             200: PostSerializer(),
             404: "Not found"
         },
-        tags=['Admin']
+        tags=['Post']
     )
     def get_by_id(self, request, id, *args, **kwargs):
         if not id:
