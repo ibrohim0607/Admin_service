@@ -78,7 +78,7 @@ class UsersViewSet(ViewSet):
         if not id:
             return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        response = requests.get(f"{settings.USER_MANAGEMENT_SERVICE_URL}/user/{id}", )
+        response = requests.get(f"{settings.USER_MANAGEMENT_SERVICE_URL}/user/{id}/", )
         if response.status_code == 200:
             return Response(response.json(), status=response.status_code)
         else:
@@ -135,7 +135,7 @@ class PostsViewSet(ViewSet):
         if not id:
             return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        response = requests.get(f"{settings.POSTS_SERVICE_URL}/post/{id}", )
+        response = requests.get(f"{settings.POSTS_SERVICE_URL}/posts/{id}/", )
         if response.status_code == 200:
             return Response(response.json(), status=response.status_code)
         else:

@@ -18,7 +18,6 @@ class PostSerializer(serializers.Serializer):
     author = serializers.IntegerField()
     title = serializers.CharField(max_length=120)
     description = serializers.CharField(max_length=500)
-    image = serializers.ImageField(blank=True, null=True, required=True)
     like_count = serializers.IntegerField()
     comment_count = serializers.IntegerField()
     view_count = serializers.IntegerField()
