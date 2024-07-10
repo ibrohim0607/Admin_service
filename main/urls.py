@@ -1,10 +1,9 @@
 from django.urls import path
-from .views import UsersViewSet, UserAnalyticsViewSet
+from .views import UsersViewSet
 
 urlpatterns = [
+    # user Admin
     path('get/', UsersViewSet.as_view({'get': 'get_all'})),
-    path('delete/', UsersViewSet.as_view({'post': 'delete'})),
-    path('get_id/', UsersViewSet.as_view({'get': 'get_by_id'})),
-
-    path('analytic/', UserAnalyticsViewSet.as_view({'get': 'get'})),
+    path('delete/<int:id>/', UsersViewSet.as_view({'delete': 'delete'})),
+    path('get_id/<int:id>/', UsersViewSet.as_view({'get': 'get_by_id'})),
 ]
