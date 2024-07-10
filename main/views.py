@@ -5,7 +5,7 @@ from rest_framework.viewsets import ViewSet
 import requests
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
-from .serializer import UserSerializer
+from .serializer import UserSerializer, PostSerializer
 from drf_yasg import openapi
 
 
@@ -78,8 +78,65 @@ class UsersViewSet(ViewSet):
         if not id:
             return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        response = requests.get(f"{settings.USER_MANAGEMENT_SERVICE_URL}/user_details/{id}", )
+        response = requests.get(f"{settings.USER_MANAGEMENT_SERVICE_URL}/user/{id}", )
         if response.status_code == 200:
             return Response(response.json(), status=response.status_code)
         else:
             return Response({'error': 'Failed to get user details'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class UserAnalyticsViewSet(ViewSet):
+    @swagger_auto_schema(
+        operation_description="Get Analytic",
+        operation_summary="Get Analytic",
+        # responses={200: UserSerializer(many=True)},
+        tags=['Admin']
+    )
+    def get(self, request, *args, **kwargs):
+        response = requests.get(f"{settings.ANALYTICS_SERVICE_URL}/user_analytics/", )
+        if response.status_code == 200:
+            return Response(response.json(), status=response.status_code)
+        else:
+            return Response({'error': 'Failed to retrieve analytics data'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class PostsViewSet(ViewSet):
+    @swagger_auto_schema(
+        operation_description="Get all Posts",
+        operation_summary="Get all Posts",
+        responses={
+            200: PostSerializer(),
+            404: "Not found"
+        },
+        tags=['Admin']
+    )
+    def get(self, request, *args, **kwargs):
+        response = requests.get(f"{settings.POSTS_SERVICE_URL}/posts/")
+        if response.status_code == 200:
+            return Response(response.json(), status=response.status_code)
+        else:
+            return Response({'error': 'Failed to retrieve posts data'}, status=status.HTTP_404_NOT_FOUND)
+
+    @swagger_auto_schema(
+        operation_description="Get by  post id",
+        operation_summary="Get by post id",
+        manual_parameters=[
+            openapi.Parameter('id', type=openapi.TYPE_INTEGER, description='get post by id',
+                              in_=openapi.IN_QUERY,
+                              required=True),
+        ],
+        responses={
+            200: PostSerializer(),
+            404: "Not found"
+        },
+        tags=['Admin']
+    )
+    def get_by_id(self, request, id, *args, **kwargs):
+        if not id:
+            return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        response = requests.get(f"{settings.POSTS_SERVICE_URL}/post/{id}", )
+        if response.status_code == 200:
+            return Response(response.json(), status=response.status_code)
+        else:
+            return Response({'error': 'Failed to get post details'}, status=status.HTTP_404_NOT_FOUND)
