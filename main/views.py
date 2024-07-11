@@ -35,19 +35,11 @@ class UsersViewSet(ViewSet):
     @swagger_auto_schema(
         operation_description="Delete user",
         operation_summary="Delete user",
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "token": openapi.Schema(type=openapi.TYPE_STRING, title="token"),
-                "user_id": openapi.Schema(type=openapi.TYPE_INTEGER, title="user_id")
-            },
-            requiered=["token", "user_id"]
-        ),
         responses={200: UserSerializer()},
         tags=['User']
     )
-    def delete(self, request, user_id, *args, **kwargs):
-        response = requests.post(f"{settings.USER_MANAGEMENT_SERVICE_URL}/delete/user/",
+    def delete(self, request, id, *args, **kwargs):
+        response = requests.post(f"{settings.USER_MANAGEMENT_SERVICE_URL}/delete/user/{id}",
                                  json={
                                      "token": str(self.get_token().json().get('token'))}
                                  )
@@ -56,22 +48,14 @@ class UsersViewSet(ViewSet):
     @swagger_auto_schema(
         operation_description="Get by  user id",
         operation_summary="Get by user id",
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "token": openapi.Schema(type=openapi.TYPE_STRING, title="token"),
-                "user_id": openapi.Schema(type=openapi.TYPE_INTEGER, title="user_id")
-            },
-            requiered=["token", "user_id"]
-        ),
         responses={
             200: UserSerializer(),
             404: "Not found"
         },
         tags=['User']
     )
-    def get_by_id(self, request, *args, **kwargs):
-        response = requests.get(f"{settings.USER_MANAGEMENT_SERVICE_URL}/get/user/id/",
+    def get_by_id(self, request, id, *args, **kwargs):
+        response = requests.get(f"{settings.USER_MANAGEMENT_SERVICE_URL}/get/user/{id}/",
                                 data={"token": str(self.get_token().json().get('token'))})
         return Response(response.json())
 
@@ -88,15 +72,8 @@ class PostsViewSet(ViewSet):
     @swagger_auto_schema(
         operation_description="Get all Posts",
         operation_summary="Get all Posts",
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "token": openapi.Schema(type=openapi.TYPE_STRING, title="token"),
-            },
-            requiered=["token"]
-        ),
         responses={
-            200: PostSerializer(),
+            200: PostSerializer(many=True),
             404: "Not found"
         },
         tags=['Post']
@@ -112,14 +89,6 @@ class PostsViewSet(ViewSet):
     @swagger_auto_schema(
         operation_description="Get by  post id",
         operation_summary="Get by post id",
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "token": openapi.Schema(type=openapi.TYPE_STRING, title="token"),
-                "user_id": openapi.Schema(type=openapi.TYPE_INTEGER, title="user_id")
-            },
-            requiered=["token", "user_id"]
-        ),
         responses={
             200: PostSerializer(),
             404: "Not found"
