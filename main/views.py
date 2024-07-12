@@ -4,11 +4,10 @@ import requests
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 from .serializer import UserSerializer, PostSerializer
-from drf_yasg import openapi
+from rest_framework import status
 
 
 class UsersViewSet(ViewSet):
-
     def get_token(self):
         response = requests.post('http://134.122.76.27:8114/api/v1/login/', json={
             "service_id": 3,
@@ -24,11 +23,12 @@ class UsersViewSet(ViewSet):
         tags=['User']
     )
     def get_all(self, request, *args, **kwargs):
-        print(self.get_token().json().get('token'))
+        print(request.data)
         response = requests.post(f"{settings.USER_MANAGEMENT_SERVICE_URL}/get/users/",
                                  json={"token": str(self.get_token().json().get('token'))})
         if response.status_code != 200:
             return Response({"error": "Can not get data"}, status=response.status_code)
+        print(response)
 
         return Response(response.json())
 
@@ -39,11 +39,12 @@ class UsersViewSet(ViewSet):
         tags=['User']
     )
     def delete(self, request, id, *args, **kwargs):
-        response = requests.post(f"{settings.USER_MANAGEMENT_SERVICE_URL}/delete/user/{id}",
-                                 json={
-                                     "token": str(self.get_token().json().get('token'))}
-                                 )
-        return Response(response.json())
+
+        response = requests.delete(f"{settings.USER_MANAGEMENT_SERVICE_URL}/delete/user/{id}/",
+                                   json={"token": str(self.get_token().json().get('token'))})
+        if response.status_code == 200:
+            return Response({'message': 'user deleted'}, status=status.HTTP_200_OK)
+        return Response({'message': 'user not deleted'}, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="Get by  user id",
@@ -55,9 +56,12 @@ class UsersViewSet(ViewSet):
         tags=['User']
     )
     def get_by_id(self, request, id, *args, **kwargs):
-        response = requests.get(f"{settings.USER_MANAGEMENT_SERVICE_URL}/get/user/{id}/",
-                                data={"token": str(self.get_token().json().get('token'))})
-        return Response(response.json())
+        response = requests.post(f"{settings.USER_MANAGEMENT_SERVICE_URL}/get/user/{id}/",
+                                 json={"token": str(self.get_token().json().get('token'))})
+        print(response)
+        if response.status_code == 200:
+            return Response(response.json())
+        return Response({"error": "Can not get data"}, status=response.status_code)
 
 
 class PostsViewSet(ViewSet):
@@ -78,9 +82,9 @@ class PostsViewSet(ViewSet):
         },
         tags=['Post']
     )
-    def get(self, request, *args, **kwargs):
-        response = requests.get(f"{settings.POSTS_SERVICE_URL}/posts/list/",
-                                json={"token": str(self.get_token().json().get('token'))})
+    def get_all(self, request, *args, **kwargs):
+        response = requests.post(f"{settings.POSTS_SERVICE_URL}/posts/list/",
+                                 json={"token": str(self.get_token().json().get('token'))})
         print(response)
         if response.status_code != 200:
             return Response({"error": "Can not get data"}, status=response.status_code)
@@ -96,6 +100,21 @@ class PostsViewSet(ViewSet):
         tags=['Post']
     )
     def get_by_id(self, request, id, *args, **kwargs):
-        response = requests.get(f"{settings.POSTS_SERVICE_URL}/post/{id}/",
-                                data={"token": str(self.get_token().json().get('token'))})
+        response = requests.post(f"{settings.POSTS_SERVICE_URL}/post/detail-delete/{id}/",
+                                 data={"token": str(self.get_token().json().get('token'))})
         return Response(response.json())
+
+    @swagger_auto_schema(
+        operation_description="Delete post",
+        operation_summary="Delete post",
+        responses={200: PostSerializer()},
+        tags=['Post']
+    )
+    def delete_post(self, request, id, *args, **kwargs):
+
+        response = requests.delete(f"{settings.POSTS_SERVICE_URL}/post/detail-delete/{id}/",
+                                   json={"token": str(self.get_token().json().get('token'))})
+        print(response)
+        if response.status_code == 200:
+            return Response({'message': 'post deleted'}, status=status.HTTP_200_OK)
+        return Response({'message': 'post not deleted'}, status=status.HTTP_400_BAD_REQUEST)
