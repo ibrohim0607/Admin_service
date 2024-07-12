@@ -23,13 +23,10 @@ class UsersViewSet(ViewSet):
         tags=['User']
     )
     def get_all(self, request, *args, **kwargs):
-        print(request.data)
         response = requests.post(f"{settings.USER_MANAGEMENT_SERVICE_URL}/get/users/",
                                  json={"token": str(self.get_token().json().get('token'))})
         if response.status_code != 200:
             return Response({"error": "Can not get data"}, status=response.status_code)
-        print(response)
-
         return Response(response.json())
 
     @swagger_auto_schema(
@@ -43,7 +40,7 @@ class UsersViewSet(ViewSet):
         response = requests.delete(f"{settings.USER_MANAGEMENT_SERVICE_URL}/delete/user/{id}/",
                                    json={"token": str(self.get_token().json().get('token'))})
         if response.status_code == 200:
-            return Response({'message': 'user deleted'}, status=status.HTTP_200_OK)
+            return Response({'message': 'user deleted'}, status=response.status_code)
         return Response({'message': 'user not deleted'}, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
@@ -58,10 +55,9 @@ class UsersViewSet(ViewSet):
     def get_by_id(self, request, id, *args, **kwargs):
         response = requests.post(f"{settings.USER_MANAGEMENT_SERVICE_URL}/get/user/{id}/",
                                  json={"token": str(self.get_token().json().get('token'))})
-        print(response)
         if response.status_code == 200:
             return Response(response.json())
-        return Response({"error": "Can not get data"}, status=response.status_code)
+        return Response({"error": "Can not get data"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PostsViewSet(ViewSet):
@@ -85,9 +81,8 @@ class PostsViewSet(ViewSet):
     def get_all(self, request, *args, **kwargs):
         response = requests.post(f"{settings.POSTS_SERVICE_URL}/posts/list/",
                                  json={"token": str(self.get_token().json().get('token'))})
-        print(response)
         if response.status_code != 200:
-            return Response({"error": "Can not get data"}, status=response.status_code)
+            return Response({"error": "Can not get data"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(response.json())
 
     @swagger_auto_schema(
@@ -114,7 +109,6 @@ class PostsViewSet(ViewSet):
 
         response = requests.delete(f"{settings.POSTS_SERVICE_URL}/post/detail-delete/{id}/",
                                    json={"token": str(self.get_token().json().get('token'))})
-        print(response)
         if response.status_code == 200:
-            return Response({'message': 'post deleted'}, status=status.HTTP_200_OK)
+            return Response({'message': 'post deleted'}, status=response.status_code)
         return Response({'message': 'post not deleted'}, status=status.HTTP_400_BAD_REQUEST)
